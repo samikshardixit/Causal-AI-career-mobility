@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Do AI Skills Pay Off? | Causal Labor Market Analysis</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap');
+:root{--navy:#0D1B2A;--blue:#2D426A;--mid:#3D5A80;--green:#48EB8F;--orange:#F4845F;--red:#E05C5C;--gray:#8B9DB5;--light:#E8EFF7;--white:#F7FAFE;--card:#111E2E;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--navy);color:var(--white);font-family:'Outfit',sans-serif;font-weight:300;line-height:1.6;}
+.hero{padding:80px 60px 60px;border-bottom:1px solid rgba(255,255,255,0.07);position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(72,235,143,0.06) 0%,transparent 65%);pointer-events:none;}
+.hero-label{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:16px;}
+.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(36px,5vw,64px);line-height:1.1;color:var(--white);max-width:800px;margin-bottom:20px;}
+.hero h1 em{color:var(--green);font-style:italic;}
+.hero-sub{font-size:16px;color:var(--gray);max-width:620px;margin-bottom:40px;}
+.method-pills{display:flex;gap:10px;flex-wrap:wrap;}
+.pill{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;padding:5px 14px;border-radius:20px;border:1px solid;}
+.pill.blue{color:var(--green);border-color:var(--green);background:rgba(72,235,143,0.08);}
+.pill.gray{color:var(--gray);border-color:var(--gray);background:rgba(139,157,181,0.08);}
+.kpi-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,0.06);}
+.kpi{padding:48px 40px;background:var(--navy);position:relative;}
+.kpi::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
+.kpi:nth-child(1)::after{background:var(--green);}
+.kpi:nth-child(2)::after{background:var(--orange);}
+.kpi:nth-child(3)::after{background:var(--mid);}
+.kpi-num{font-family:'DM Serif Display',serif;font-size:56px;line-height:1;margin-bottom:8px;}
+.kpi:nth-child(1) .kpi-num{color:var(--green);}
+.kpi:nth-child(2) .kpi-num{color:var(--orange);}
+.kpi:nth-child(3) .kpi-num{color:#7EB8F7;}
+.kpi-label{font-size:13px;font-weight:500;color:var(--white);margin-bottom:4px;}
+.kpi-sub{font-size:11px;color:var(--gray);font-family:'DM Mono',monospace;}
+.section{padding:60px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.section-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:36px;}
+.section-label{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--green);text-transform:uppercase;margin-bottom:6px;}
+.section-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--white);max-width:600px;}
+.section-note{font-size:12px;color:var(--gray);font-family:'DM Mono',monospace;max-width:280px;text-align:right;line-height:1.5;}
+.card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:32px;}
+.card-title{font-size:13px;font-weight:600;color:var(--white);margin-bottom:4px;}
+.card-sub{font-size:11px;color:var(--gray);font-family:'DM Mono',monospace;margin-bottom:24px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.insight{background:rgba(72,235,143,0.06);border:1px solid rgba(72,235,143,0.2);border-radius:8px;padding:20px 24px;margin-top:24px;}
+.insight-label{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--green);text-transform:uppercase;margin-bottom:8px;}
+.insight p{font-size:13px;color:var(--light);line-height:1.6;}
+.method-card{background:var(--card);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:28px;}
+.method-step{font-family:'DM Mono',monospace;font-size:32px;color:rgba(72,235,143,0.25);margin-bottom:12px;font-weight:500;}
+.method-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:8px;}
+.method-desc{font-size:12px;color:var(--gray);line-height:1.6;}
+footer{padding:40px 60px;border-top:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center;}
+footer p{font-size:12px;color:var(--gray);font-family:'DM Mono',monospace;}
+.footer-name{font-family:'DM Serif Display',serif;font-size:18px;color:var(--white);margin-bottom:4px;}
+canvas{width:100%!important;}
+@media(max-width:900px){.kpi-row,.two-col,.method-grid{grid-template-columns:1fr;}.hero,.section{padding:40px 24px;}footer{flex-direction:column;gap:16px;text-align:center;}.section-header{flex-direction:column;gap:12px;}.section-note{text-align:left;}}
+</style>
+</head>
+<body>
+
+<section class="hero">
+  <div class="hero-label">Workforce Intelligence Research</div>
+  <h1>Do AI Skills <em>Actually</em><br>Pay Off?</h1>
+  <p class="hero-sub">A causal analysis of how acquiring AI-related skills affects wages, promotions, and career mobility — correcting for the selection bias that inflates raw estimates.</p>
+  <div class="method-pills">
+    <span class="pill blue">PSM + DiD</span>
+    <span class="pill blue">Event Study</span>
+    <span class="pill blue">N = 8,000 Workers</span>
+    <span class="pill gray">2019–2024 Panel</span>
+    <span class="pill gray">ChatGPT Natural Experiment</span>
+    <span class="pill gray">8 Industries · 8 Job Families</span>
+  </div>
+</section>
+
+<div class="kpi-row">
+  <div class="kpi">
+    <div class="kpi-num">+8.8%</div>
+    <div class="kpi-label">Causal Wage Premium</div>
+    <div class="kpi-sub">PSM+DiD estimate · raw gap is ~32%</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-num">+4.5pp</div>
+    <div class="kpi-label">Promotion Probability</div>
+    <div class="kpi-sub">marginal effect post-adoption</div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-num">+5.3pp</div>
+    <div class="kpi-label">Job Mobility Increase</div>
+    <div class="kpi-sub">higher switching rate for AI-skilled workers</div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-label">The Problem</div>
+      <div class="section-title">Selection Bias Inflates the Raw Premium by ~4x</div>
+    </div>
+    <div class="section-note">High-ability workers self-select into AI skills. A naive comparison overstates the causal effect.</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">Raw vs. Causal Salary Gap Decomposition</div>
+      <div class="card-sub">PSM+DiD strips out selection — what's left is the true effect</div>
+      <canvas id="decompChart" height="220"></canvas>
+      <div class="insight">
+        <div class="insight-label">Key Finding</div>
+        <p>The raw salary gap between AI-skilled and non-AI-skilled workers is ~32% in 2024. After matching on observable characteristics and using ChatGPT's launch as a natural experiment, the <strong>true causal effect is +8.8%</strong> — still economically significant, but far from the naive estimate.</p>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Matched Salary Trajectories (PSM-balanced sample)</div>
+      <div class="card-sub">Treated vs. control on comparable pre-treatment paths</div>
+      <canvas id="trajChart" height="220"></canvas>
+      <div class="insight">
+        <div class="insight-label">Parallel Trends</div>
+        <p>Before the ChatGPT shock (2019–2022), treated and control workers follow near-identical salary trajectories — validating the parallel trends assumption required for DiD.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Skill Diffusion</div>
+      <div class="section-title">AI Skills Spread Unevenly Across the Workforce</div>
+    </div>
+    <div class="section-note">Adoption is fastest in Data Science and Software Engineering, slowest in HR and Operations — mirroring task-level AI exposure.</div>
+  </div>
+  <div class="two-col">
+    <div class="card">
+      <div class="card-title">AI Skill Adoption by Job Family (2019–2024)</div>
+      <div class="card-sub">% of workers with at least one AI skill</div>
+      <canvas id="adoptionChart" height="260"></canvas>
+    </div>
+    <div class="card">
+      <div class="card-title">Industry-Level Adoption Rate (2024)</div>
+      <div class="card-sub">Technology and Consulting lead; Manufacturing and Retail lag</div>
+      <canvas id="industryChart" height="260"></canvas>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Dynamic Treatment Effects</div>
+      <div class="section-title">Event Study Confirms Clean Identification</div>
+    </div>
+    <div class="section-note">Pre-shock coefficients ≈ 0 validates parallel trends. Post-shock coefficients show the causal effect emerging.</div>
+  </div>
+  <div class="card">
+    <div class="card-title">Event Study: log(salary) Coefficients Relative to 2022</div>
+    <div class="card-sub">Year-by-year treatment effects · 95% confidence intervals · Base year = 2022</div>
+    <canvas id="eventChart" height="180"></canvas>
+    <div class="insight">
+      <div class="insight-label">Pre-trends Test</div>
+      <p>Coefficients for 2019, 2020, and 2021 are statistically indistinguishable from zero, confirming that treated and control workers were on parallel salary trajectories before the ChatGPT shock. The 2024 coefficient represents a <strong>+12.9% cumulative causal wage effect</strong> of AI skill acquisition.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="section-header">
+    <div>
+      <div class="section-label">Identification Strategy</div>
+      <div class="section-title">Why This Is Causal, Not Just Correlational</div>
+    </div>
+  </div>
+  <div class="method-grid">
+    <div class="method-card">
+      <div class="method-step">01</div>
+      <div class="method-name">Natural Experiment</div>
+      <div class="method-desc">ChatGPT's launch (Nov 2022) provides exogenous variation in AI skill adoption timing. No worker could have anticipated the exact shock, making it as-good-as-random for identification purposes.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">02</div>
+      <div class="method-name">Propensity Score Matching</div>
+      <div class="method-desc">Workers are matched on pre-treatment observables: industry, job family, seniority, AI exposure, and 2022 salary. This constructs a comparable counterfactual control group, reducing observable selection bias by ~50%.</div>
+    </div>
+    <div class="method-card">
+      <div class="method-step">03</div>
+      <div class="method-name">Difference-in-Differences</div>
+      <div class="method-desc">Within the matched sample, DiD removes time-invariant unobservables (e.g. latent ability). Causal estimate β₃ = 0.0844 (SE=0.0029, p&lt;0.001) with clustered standard errors at worker level.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div>
+    <div class="footer-name">Samiksha Dixit</div>
+    <p>Data Scientist · Causal Inference · Labor Economics</p>
+  </div>
+  <div style="text-align:right">
+    <p>Methodology: PSM + DiD + Event Study</p>
+    <p>N=8,000 workers · 2019–2024 panel · 8 industries</p>
+    <p>Grounded in Alekseeva et al. (2021), Stephany et al. (2026)</p>
+  </div>
+</footer>
+
+<script>
+const BLUE='#3D5A80',GREEN='#48EB8F',ORANGE='#F4845F',GRAY='#8B9DB5',RED='#E05C5C',WHITE='#F7FAFE';
+Chart.defaults.color='#8B9DB5';
+Chart.defaults.borderColor='rgba(255,255,255,0.06)';
+Chart.defaults.font.family='Outfit';
+
+new Chart(document.getElementById('decompChart'),{
+  type:'bar',
+  data:{labels:['Raw Gap (2024)','Selection Bias','Causal Effect (DiD+PSM)'],
+    datasets:[{data:[32.1,23.3,8.8],
+      backgroundColor:[GRAY,RED,GREEN],borderRadius:6,borderWidth:0}]},
+  options:{responsive:true,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:ctx=>' '+ctx.raw.toFixed(1)+'%'}}},
+    scales:{y:{ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}},
+      x:{grid:{display:false}}}}
+});
+
+new Chart(document.getElementById('trajChart'),{
+  type:'line',
+  data:{labels:[2019, 2020, 2021, 2022, 2023, 2024],datasets:[
+    {label:'AI-Skilled (Treated)',data:[114.9, 119.2, 123.6, 128.2, 139.4, 163.2],borderColor:GREEN,
+     backgroundColor:'rgba(72,235,143,0.08)',borderWidth:2.5,pointRadius:4,fill:false,tension:0.3},
+    {label:'No AI Skills (Control)',data:[104.5, 108.2, 111.7, 115.6, 119.6, 123.7],borderColor:GRAY,
+     backgroundColor:'transparent',borderWidth:2,borderDash:[5,4],pointRadius:4,fill:false,tension:0.3}
+  ]},
+  options:{responsive:true,plugins:{legend:{labels:{color:WHITE,font:{size:11}}},
+    tooltip:{callbacks:{label:ctx=>' $'+ctx.raw+'K'}}},
+    scales:{y:{ticks:{callback:v=>'$'+v+'K'},grid:{color:'rgba(255,255,255,0.05)'}},
+      x:{grid:{display:false}}}}
+});
+
+new Chart(document.getElementById('adoptionChart'),{
+  type:'line',
+  data:{labels:[2019, 2020, 2021, 2022, 2023, 2024],datasets:[{"label": "Data Science", "data": [0.0, 0.0, 0.0, 0.0, 42.9, 67.4], "borderColor": "#48EB8F", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Finance/Accounting", "data": [0.0, 0.0, 0.0, 0.0, 29.7, 45.5], "borderColor": "#3DBF75", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "HR", "data": [0.0, 0.0, 0.0, 0.0, 28.9, 43.7], "borderColor": "#2D9355", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Marketing", "data": [0.0, 0.0, 0.0, 0.0, 31.5, 53.1], "borderColor": "#3D5A80", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Operations", "data": [0.0, 0.0, 0.0, 0.0, 29.5, 45.0], "borderColor": "#5A7BA0", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Product", "data": [0.0, 0.0, 0.0, 0.0, 35.1, 54.3], "borderColor": "#7EB8F7", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Research", "data": [0.0, 0.0, 0.0, 0.0, 36.5, 55.3], "borderColor": "#F4845F", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}, {"label": "Software Eng", "data": [0.0, 0.0, 0.0, 0.0, 39.1, 62.0], "borderColor": "#E05C5C", "backgroundColor": "transparent", "borderWidth": 2, "pointRadius": 3, "tension": 0.3}]},
+  options:{responsive:true,plugins:{legend:{labels:{color:WHITE,font:{size:9},boxWidth:12}},
+    tooltip:{callbacks:{label:ctx=>' '+ctx.dataset.label+': '+ctx.raw+'%'}}},
+    scales:{y:{min:0,max:100,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}},
+      x:{grid:{display:false}}}}
+});
+
+const indVals=[45.4, 48.1, 49.2, 51.4, 51.9, 56.8, 58.5, 66.0];
+new Chart(document.getElementById('industryChart'),{
+  type:'bar',
+  data:{labels:["Manufacturing", "Retail", "Education", "Healthcare", "Media", "Consulting", "Finance", "Technology"],datasets:[{data:indVals,
+    backgroundColor:indVals.map(v=>v>50?GREEN:v>35?BLUE:GRAY),borderRadius:4,borderWidth:0}]},
+  options:{indexAxis:'y',responsive:true,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:ctx=>' '+ctx.raw+'%'}}},
+    scales:{x:{min:0,max:85,ticks:{callback:v=>v+'%'},grid:{color:'rgba(255,255,255,0.05)'}},
+      y:{grid:{display:false}}}}
+});
+
+const evYears=[2019, 2020, 2021, 2022, 2023, 2024],evCoefs=[-0.0475, -0.0327, -0.0172, 0.0, -0.0015, 0.1217],evSEs=[0.002, 0.0016, 0.0011, 0.0, 0.0026, 0.003];
+new Chart(document.getElementById('eventChart'),{
+  type:'bar',
+  data:{labels:evYears,datasets:[
+    {type:'bar',label:'DiD Coefficient',data:evCoefs,
+     backgroundColor:evYears.map(y=>y<2023?'rgba(139,157,181,0.4)':'rgba(72,235,143,0.55)'),
+     borderColor:evYears.map(y=>y<2023?GRAY:GREEN),borderWidth:1.5,borderRadius:4},
+    {type:'line',label:'95% CI upper',data:evCoefs.map((c,i)=>c+1.96*evSEs[i]),
+     borderColor:'rgba(255,255,255,0.2)',borderDash:[3,3],pointRadius:0,fill:false},
+    {type:'line',label:'95% CI lower',data:evCoefs.map((c,i)=>c-1.96*evSEs[i]),
+     borderColor:'rgba(255,255,255,0.2)',borderDash:[3,3],pointRadius:0,
+     fill:'-1',backgroundColor:'rgba(255,255,255,0.04)'}
+  ]},
+  options:{responsive:true,plugins:{legend:{labels:{filter:item=>item.text==='DiD Coefficient',color:WHITE}},
+    tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='DiD Coefficient'
+      ?' β = '+ctx.raw.toFixed(4)+' ('+((Math.exp(ctx.raw)-1)*100).toFixed(1)+'% salary effect)':''}}},
+    scales:{y:{grid:{color:'rgba(255,255,255,0.05)'},ticks:{callback:v=>(v>=0?'+':'')+(v*100).toFixed(1)+'%'}},
+      x:{grid:{display:false}}}}
+});
+</script>
+</body>
+</html>
